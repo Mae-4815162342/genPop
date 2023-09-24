@@ -6,8 +6,7 @@ import random
 import ipywidgets as iw
 
 #Hardy-Weinberg
-def simulate_HW(p, pop, gens):
-    
+def simulation_for_p(p, pop, gens):
     # inits
     frequences = np.zeros((gens, 3))
     new_p = p
@@ -22,13 +21,13 @@ def simulate_HW(p, pop, gens):
             # allele 1
             allele_1 = 0
             n = random.random()
-            if n > p:
+            if n > new_p:
                 allele_1 = 1
                 
             # allele 2
             allele_2 = 0
             m = random.random()
-            if m > p:
+            if m > new_p:
                 allele_2 = 1
             
             # add to population
@@ -40,17 +39,17 @@ def simulate_HW(p, pop, gens):
         new_p = (current_pop[0] + current_pop[1] / 2) / pop
     return frequences    
 
+def simulation(args):
+  p_step, pop, gens = args
+  p_it = round(1/p_step)
 
-pop = 10000
-gens = 20
-p_it = 20
-
-p_results = np.zeros((p_it - 1, gens, 3))
-for p_mille in range(1, p_it):
+  p_results = np.zeros((p_it - 1, gens, 3))
+  for p_mille in range(1, p_it):
     p = p_mille / p_it
     
-    res = simulate_HW(p, pop, gens)
+    res = simulation_for_p(p, pop, gens)
     p_results[p_mille - 1] = res
+  return p_results
 
 
 def plot_sumup(gen):
@@ -74,10 +73,10 @@ def plot_sumup(gen):
             label_list.append(label)
     plt.legend(handle_list, label_list)
     
-iw.interact(plot_sumup, gen=(1,gens))  
+#iw.interact(plot_sumup, gen=(1,gens))  
 
 def plot_results(p, gen):
     plt.title('Genotype frequences for p=' + str(round(p, 2)) + ' after ' + str(gen) + ' generations')
     plt.bar(['AA', 'Aa', 'aa'], p_results[math.floor(p*p_it) - 1][gen - 1], color=['b', 'r', 'g'])
     
-iw.interact(plot_results, p=(1/p_it, (p_it - 1)/p_it), gen=(1,gens))
+#iw.interact(plot_results, p=(1/p_it, (p_it - 1)/p_it), gen=(1,gens))
